@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kzl - Ar Condicionado</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .login-box h2 { color: #667eea; margin-bottom: 10px; text-align: center; }
+        .login-box h3 { text-align: center; color: #666; margin-bottom: 30px; }
+
+        .dashboard {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: white; color: #667eea; }
+
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            padding: 0 30px;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        .tab:hover { color: #667eea; }
+        .tab.active { color: #667eea; border-bottom-color: #667eea; font-weight: bold; }
+
+        .content { padding: 30px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: 500; }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: #667eea; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-danger   { background: #dc3545; }
+        .btn-info     { background: #17a2b8; }
+        .btn-success  { background: #28a745; }
+        .btn-warning  { background: #e67e22; }
+        .btn-secondary { background: #6c757d; }
+        .btn-small { padding: 5px 12px; font-size: 12px; }
+
+        .import-export-section { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+        .file-input-wrapper { position: relative; }
+        .file-input-wrapper input[type="file"] { display: none; }
+        .file-input-label {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .file-input-label:hover { transform: translateY(-2px); }
+
+        .table-container { overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f8f9fa; font-weight: 600; color: #333; }
+        tr:hover { background: #f5f5f5; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .card h3 { color: #667eea; margin-bottom: 15px; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .stat-card h3 { font-size: 32px; margin-bottom: 5px; }
+        .stat-card p { opacity: 0.9; }
+
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-pendente     { background: #fff3cd; color: #856404; }
+        .status-agendado     { background: #d1ecf1; color: #0c5460; }
+        .status-concluído    { background: #d4edda; color: #155724; }
+        .status-cancelado    { background: #f8d7da; color: #721c24; }
+        .status-aprovado     { background: #d4edda; color: #155724; }
+        .status-recusado     { background: #f8d7da; color: #721c24; }
+        .status-em-andamento { background: #d1ecf1; color: #0c5460; }
+        .status-ativo        { background: #d4edda; color: #155724; }
+        .status-inativo      { background: #f8d7da; color: #721c24; }
+
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error   { background: #f8d7da; color: #721c24; }
+        .alert-warning { background: #fff3cd; color: #856404; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 950px;
+            width: 95%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .modal h3 { color: #667eea; margin-bottom: 5px; }
+        .modal p  { color: #666; margin-bottom: 20px; font-size: 14px; }
+        .modal-footer { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+        .preview-row td input[type="datetime-local"],
+        .preview-row td input[type="text"],
+        .preview-row td select {
+            padding: 6px 8px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .preview-row td { vertical-align: middle; }
+
+        .tag-vencendo { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 8px; font-size: 11px; }
+        .tag-vencido  { background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 8px; font-size: 11px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- LOGIN -->
+    <div class="login-box" id="loginBox">
+        <h2>🛠️ Kzl</h2>
+        <h3>Ar Condicionado</h3>
+        <div class="form-group">
+            <label>Usuário</label>
+            <input type="text" id="loginUsername" placeholder="Digite seu usuário">
+        </div>
+        <div class="form-group">
+            <label>Senha</label>
+            <input type="password" id="loginPassword" placeholder="Digite sua senha">
+        </div>
+        <button class="btn" style="width:100%;margin-top:20px;" onclick="app.login()">Entrar</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboard">
+        <div class="header">
+            <h1>Kzl - Ar Condicionado</h1>
+            <div>
+                <span id="userDisplay"></span>
+                <button class="logout-btn" onclick="app.logout()">Sair</button>
+            </div>
+        </div>
+
+        <div class="tabs" id="tabsContainer"></div>
+
+        <div class="content">
+            <div id="alertContainer"></div>
+
+            <!-- Dashboard -->
+            <div class="tab-content" id="tab-dashboard">
+                <h2 style="margin-bottom:20px;">Dashboard</h2>
+                <div class="stats">
+                    <div class="stat-card"><h3 id="statClientes">0</h3><p>Clientes Cadastrados</p></div>
+                    <div class="stat-card"><h3 id="statContratos">0</h3><p>Contratos Ativos</p></div>
+                    <div class="stat-card"><h3 id="statOrcamentos">0</h3><p>Orçamentos Ativos</p></div>
+                    <div class="stat-card"><h3 id="statServicos">0</h3><p>Serviços Agendados</p></div>
+                    <div class="stat-card"><h3 id="statManutencoes">0</h3><p>Manutenções Pendentes</p></div>
+                </div>
+                <div id="dashboardAlertas"></div>
+            </div>
+
+            <!-- Clientes -->
+            <div class="tab-content" id="tab-clientes">
+                <h2>Cadastro de Clientes</h2>
+                <div class="import-export-section" style="margin-top:20px;">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="importExcel" accept=".xlsx,.xls" onchange="app.importarExcel(event)">
+                        <label for="importExcel" class="file-input-label">📥 Importar do Excel</label>
+                    </div>
+                    <button class="btn btn-secondary" onclick="app.exportarExcel()">📤 Exportar para Excel</button>
+                    <button class="btn btn-success" onclick="app.baixarModeloExcel()">📋 Baixar Modelo</button>
+                </div>
+                <div class="grid-2" style="margin-top:20px;">
+                    <div class="card">
+                        <h3>Novo Cliente</h3>
+                        <div class="form-group"><label>Nome/Empresa</label><input type="text" id="clienteNome"></div>
+                        <div class="form-group"><label>Telefone</label><input type="text" id="clienteTelefone"></div>
+                        <div class="form-group"><label>Email</label><input type="email" id="clienteEmail"></div>
+                        <div class="form-group"><label>Endereço</label><textarea id="clienteEndereco"></textarea></div>
+                        <button class="btn" onclick="app.salvarCliente()">Salvar Cliente</button>
+                    </div>
+                    <div class="card">
+                        <h3>Clientes Cadastrados</h3>
+                        <div class="form-group">
+                            <input type="text" id="searchCliente" placeholder="Buscar cliente..." onkeyup="app.filtrarClientes()">
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Nome</th><th>Telefone</th><th>Ações</th></tr></thead>
+                                <tbody id="clientesTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contratos Recorrentes -->
+            <div class="tab-content" id="tab-contratos">
+                <h2>Contratos Recorrentes</h2>
+                <p style="color:#666;margin:8px 0 20px;">Clientes com manutenções programadas. O sistema calcula a próxima data e gera os agendamentos para você revisar.</p>
+
+                <div class="import-export-section">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="importContratosExcel" accept=".xlsx,.xls" onchange="app.importarContratosExcel(event)">
+                        <label for="importContratosExcel" class="file-input-label">📥 Importar Contratos</label>
+                    </div>
+                    <button class="btn btn-secondary" onclick="app.exportarContratosExcel()">📤 Exportar Contratos</button>
+                    <button class="btn btn-success" onclick="app.baixarModeloContratos()">📋 Baixar Modelo Excel</button>
+                    <button class="btn btn-warning" onclick="app.abrirModalGeracao()">⚡ Gerar Agendamentos do Mês</button>
+                </div>
+
+                <div class="grid-2" style="margin-top:20px;">
+                    <div class="card">
+                        <h3>Novo Contrato</h3>
+                        <div class="form-group"><label>Cliente</label><select id="contratoCliente"></select></div>
+                        <div class="form-group">
+                            <label>Frequência</label>
+                            <select id="contratoFrequencia">
+                                <option value="1">Mensal (todo mês)</option>
+                                <option value="2">Bimestral (a cada 2 meses)</option>
+                                <option value="3">Trimestral (a cada 3 meses)</option>
+                                <option value="6">Semestral (a cada 6 meses)</option>
+                                <option value="12">Anual (1x por ano)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Serviço Padrão</label>
+                            <select id="contratoTipo">
+                                <option>Manutenção</option><option>Limpeza</option>
+                                <option>Reparo</option><option>Instalação</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Técnico Preferencial</label><input type="text" id="contratoTecnico"></div>
+                        <div class="form-group"><label>Valor do Contrato (R$)</label><input type="number" id="contratoValor" step="0.01" placeholder="0.00"></div>
+                        <div class="form-group"><label>Dia preferencial do mês (1–28)</label><input type="number" id="contratoDia" min="1" max="28" placeholder="Ex: 10"></div>
+                        <div class="form-group"><label>Observações</label><textarea id="contratoObs"></textarea></div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="contratoStatus">
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="app.salvarContrato()">Salvar Contrato</button>
+                    </div>
+                    <div class="card">
+                        <h3>Contratos Cadastrados</h3>
+                        <div class="form-group">
+                            <input type="text" id="searchContrato" placeholder="Buscar contrato..." onkeyup="app.filtrarContratos()">
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr><th>Cliente</th><th>Frequência</th><th>Tipo</th><th>Valor</th><th>Próxima</th><th>Status</th><th>Ações</th></tr>
+                                </thead>
+                                <tbody id="contratosTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orçamentos -->
+            <div class="tab-content" id="tab-orcamentos">
+                <h2>Orçamentos</h2>
+                <div class="grid-2" style="margin-top:20px;">
+                    <div class="card">
+                        <h3>Novo Orçamento</h3>
+                        <div class="form-group"><label>Cliente</label><select id="orcamentoCliente"></select></div>
+                        <div class="form-group">
+                            <label>Tipo de Serviço</label>
+                            <select id="orcamentoTipo">
+                                <option>Instalação</option><option>Manutenção</option>
+                                <option>Reparo</option><option>Limpeza</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Descrição</label><textarea id="orcamentoDescricao"></textarea></div>
+                        <div class="form-group"><label>Valor (R$)</label><input type="number" id="orcamentoValor" step="0.01"></div>
+                        <button class="btn" onclick="app.salvarOrcamento()">Salvar Orçamento</button>
+                    </div>
+                    <div class="card">
+                        <h3>Orçamentos Cadastrados</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+                                <tbody id="orcamentosTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agendamentos -->
+            <div class="tab-content" id="tab-agendamentos">
+                <h2>Agendamentos de Serviço</h2>
+                <div class="grid-2" style="margin-top:20px;">
+                    <div class="card">
+                        <h3>Novo Agendamento</h3>
+                        <div class="form-group"><label>Cliente</label><select id="agendamentoCliente"></select></div>
+                        <div class="form-group">
+                            <label>Tipo de Serviço</label>
+                            <select id="agendamentoTipo">
+                                <option>Instalação</option><option>Manutenção</option>
+                                <option>Reparo</option><option>Limpeza</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Data e Hora</label><input type="datetime-local" id="agendamentoData"></div>
+                        <div class="form-group"><label>Técnico Responsável</label><input type="text" id="agendamentoTecnico"></div>
+                        <div class="form-group"><label>Observações</label><textarea id="agendamentoObs"></textarea></div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="agendamentoStatus">
+                                <option>Agendado</option><option>Em Andamento</option>
+                                <option>Concluído</option><option>Cancelado</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="app.salvarAgendamento()">Salvar Agendamento</button>
+                    </div>
+                    <div class="card">
+                        <h3>Agendamentos</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Cliente</th><th>Data/Hora</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+                                <tbody id="agendamentosTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manutenções -->
+            <div class="tab-content" id="tab-manutencoes">
+                <h2>Manutenções</h2>
+                <div class="card" style="margin-top:20px; border-left-color:#e67e22;">
+                    <h3 style="color:#e67e22;">⏳ Pendentes / Em Andamento</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Data</th><th>Cliente</th><th>Técnico</th><th>Observações</th><th>Status</th></tr></thead>
+                            <tbody id="manutencoesPendentesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:20px;">
+                    <h3>✅ Concluídas</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Data</th><th>Cliente</th><th>Serviço Realizado</th><th>Técnico</th></tr></thead>
+                            <tbody id="manutencoesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usuários -->
+            <div class="tab-content" id="tab-usuarios">
+                <h2>Gerenciar Usuários</h2>
+                <div class="grid-2" style="margin-top:20px;">
+                    <div class="card">
+                        <h3>Novo Usuário</h3>
+                        <div class="form-group"><label>Nome</label><input type="text" id="usuarioNome"></div>
+                        <div class="form-group"><label>Usuário (login)</label><input type="text" id="usuarioLogin"></div>
+                        <div class="form-group"><label>Senha</label><input type="password" id="usuarioSenha"></div>
+                        <div class="form-group">
+                            <label>Tipo de Usuário</label>
+                            <select id="usuarioTipo">
+                                <option value="admin">Administrador</option>
+                                <option value="tecnico">Técnico</option>
+                                <option value="vendedor">Vendedor</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="app.salvarUsuario()">Salvar Usuário</button>
+                    </div>
+                    <div class="card">
+                        <h3>Usuários Cadastrados</h3>
+                        <div class="table-container">
+                            <table>
+                                <thead><tr><th>Nome</th><th>Login</th><th>Tipo</th><th>Ações</th></tr></thead>
+                                <tbody id="usuariosTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: Revisão e geração de agendamentos -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h3>⚡ Gerar Agendamentos do Mês</h3>
+        <p id="modalDescricao"></p>
+        <div class="table-container">
+            <table id="modalTabela">
+                <thead>
+                    <tr><th>✓</th><th>Cliente</th><th>Tipo</th><th>Data/Hora</th><th>Técnico</th><th>Observações</th></tr>
+                </thead>
+                <tbody id="modalTbody"></tbody>
+            </table>
+        </div>
+        <div id="modalVazio" style="display:none;text-align:center;color:#999;padding:20px;">
+            Nenhum contrato vence este mês ou todos já foram agendados.
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.fecharModal()">Cancelar</button>
+            <button class="btn btn-success" onclick="app.confirmarGeracaoAgendamentos()">✅ Confirmar e Criar Agendamentos</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const app = {
+    KEY: 'sistemaAC_2024',
+    dados: { clientes: [], orcamentos: [], agendamentos: [], usuarios: [], contratos: [] },
+    usuarioPadrao: { nome: 'Administrador', login: 'admin', senha: btoa('admin123'), tipo: 'admin' },
+    usuarioLogado: null,
+
+    init() {
+        this.carregarDados();
+        this.verificarSessao();
+    },
+
+    carregarDados() {
+        const raw = localStorage.getItem(this.KEY);
+        if (raw) { try { this.dados = JSON.parse(raw); } catch(e) {} }
+        if (!this.dados.usuarios?.length) this.dados.usuarios = [this.usuarioPadrao];
+        if (!this.dados.contratos) this.dados.contratos = [];
+        this.salvarDados();
+    },
+
+    salvarDados() { localStorage.setItem(this.KEY, JSON.stringify(this.dados)); },
+
+    verificarSessao() {
+        const salvo = sessionStorage.getItem('usuarioLogado');
+        if (salvo) { try { this.usuarioLogado = JSON.parse(salvo); this.abrirDashboard(); } catch(e) {} }
+    },
+
+    abrirDashboard() {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('userDisplay').textContent = `${this.usuarioLogado.nome} (${this.usuarioLogado.tipo}) `;
+        this.configurarAbas();
+        this.atualizarDashboard();
+        this.mostrarAba('dashboard');
+    },
+
+    login() {
+        const u = document.getElementById('loginUsername').value;
+        const p = document.getElementById('loginPassword').value;
+        const usuario = this.dados.usuarios.find(x => x.login === u && atob(x.senha) === p);
+        if (usuario) {
+            this.usuarioLogado = usuario;
+            sessionStorage.setItem('usuarioLogado', JSON.stringify(usuario));
+            this.abrirDashboard();
+        } else {
+            this.mostrarAlerta('Usuário ou senha incorretos!', 'error');
+        }
+    },
+
+    logout() {
+        this.usuarioLogado = null;
+        sessionStorage.removeItem('usuarioLogado');
+        document.getElementById('loginBox').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+    },
+
+    configurarAbas() {
+        const abas = [
+            { id:'dashboard',    nome:'Dashboard',               permissoes:['admin','tecnico','vendedor'] },
+            { id:'clientes',     nome:'Clientes',                permissoes:['admin','vendedor'] },
+            { id:'contratos',    nome:'📋 Contratos Recorrentes', permissoes:['admin','vendedor'] },
+            { id:'orcamentos',   nome:'Orçamentos',              permissoes:['admin','vendedor'] },
+            { id:'agendamentos', nome:'Agendamentos',            permissoes:['admin','tecnico','vendedor'] },
+            { id:'manutencoes',  nome:'Manutenções',             permissoes:['admin','tecnico'] },
+            { id:'usuarios',     nome:'Usuários',                permissoes:['admin'] }
+        ];
+        const container = document.getElementById('tabsContainer');
+        container.innerHTML = '';
+        abas.forEach(aba => {
+            if (aba.permissoes.includes(this.usuarioLogado.tipo)) {
+                const btn = document.createElement('button');
+                btn.className = 'tab';
+                btn.textContent = aba.nome;
+                btn.onclick = () => this.mostrarAba(aba.id, btn);
+                container.appendChild(btn);
+            }
+        });
+    },
+
+    mostrarAba(abaId, btnEl) {
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        const tc = document.getElementById(`tab-${abaId}`);
+        if (tc) tc.classList.add('active');
+        if (btnEl) btnEl.classList.add('active');
+        const mapa = {
+            clientes:     () => this.atualizarTabelaClientes(),
+            contratos:    () => this.atualizarTabelaContratos(),
+            orcamentos:   () => this.atualizarTabelaOrcamentos(),
+            agendamentos: () => this.atualizarTabelaAgendamentos(),
+            manutencoes:  () => this.atualizarTabelaManutencoes(),
+            usuarios:     () => this.atualizarTabelaUsuarios()
+        };
+        if (mapa[abaId]) mapa[abaId]();
+    },
+
+    mostrarAlerta(msg, tipo) {
+        const c = document.getElementById('alertContainer');
+        c.innerHTML = `<div class="alert alert-${tipo}">${msg}</div>`;
+        setTimeout(() => c.innerHTML = '', 4000);
+    },
+
+    atualizarDashboard() {
+        document.getElementById('statClientes').textContent    = this.dados.clientes.length;
+        document.getElementById('statContratos').textContent   = this.dados.contratos.filter(c => c.status === 'ativo').length;
+        document.getElementById('statOrcamentos').textContent  = this.dados.orcamentos.filter(o => ['Pendente','Aprovado'].includes(o.status)).length;
+        document.getElementById('statServicos').textContent    = this.dados.agendamentos.filter(a => ['Agendado','Em Andamento'].includes(a.status)).length;
+        document.getElementById('statManutencoes').textContent = this.dados.agendamentos.filter(a => a.tipo==='Manutenção' && ['Agendado','Em Andamento'].includes(a.status)).length;
+
+        const vencendo = this.contratosVencendoEsteMes();
+        const alertas = document.getElementById('dashboardAlertas');
+        alertas.innerHTML = vencendo.length > 0
+            ? `<div class="alert alert-warning">⚠️ <strong>${vencendo.length} contrato(s)</strong> vencem este mês e ainda não foram agendados.
+               <button class="btn btn-warning btn-small" style="margin-left:15px;" onclick="app.abrirModalGeracao()">Gerar Agendamentos</button></div>`
+            : '';
+    },
+
+    // ─── CONTRATOS ───────────────────────────────────────────────────
+
+    salvarContrato() {
+        const clienteId = document.getElementById('contratoCliente').value;
+        if (!clienteId) { this.mostrarAlerta('Selecione um cliente!', 'error'); return; }
+        const dia = Math.min(28, Math.max(1, parseInt(document.getElementById('contratoDia').value) || 10));
+        this.dados.contratos.push({
+            id: Date.now(),
+            clienteId,
+            frequencia: parseInt(document.getElementById('contratoFrequencia').value),
+            tipo:       document.getElementById('contratoTipo').value,
+            tecnico:    document.getElementById('contratoTecnico').value.trim(),
+            valor:      document.getElementById('contratoValor').value || '0',
+            dia,
+            observacoes: document.getElementById('contratoObs').value.trim(),
+            status:      document.getElementById('contratoStatus').value,
+            dataCriacao: new Date().toISOString()
+        });
+        this.salvarDados();
+        this.atualizarTabelaContratos();
+        this.atualizarDashboard();
+        this.limparForm(['contratoTecnico','contratoValor','contratoDia','contratoObs']);
+        this.mostrarAlerta('Contrato salvo com sucesso!', 'success');
+    },
+
+    atualizarTabelaContratos() {
+        this.atualizarSelectsClientes();
+        const FREQ = { 1:'Mensal', 2:'Bimestral', 3:'Trimestral', 6:'Semestral', 12:'Anual' };
+        const hoje = new Date();
+        document.getElementById('contratosTable').innerHTML = this.dados.contratos.map(c => {
+            const cliente  = this.dados.clientes.find(cl => cl.id == c.clienteId);
+            const proxima  = this.calcularProximaData(c);
+            const proxStr  = proxima ? proxima.toLocaleDateString('pt-BR') : '—';
+            const dias     = proxima ? Math.ceil((proxima - hoje) / 86400000) : null;
+            const tag      = dias === null ? ''
+                : dias < 0 ? '<span class="tag-vencido">⛔ Atrasado</span>'
+                : dias <= 7 ? `<span class="tag-vencendo">⚠️ ${dias}d</span>`
+                : '';
+            return `<tr>
+                <td>${cliente?.nome || 'N/A'}</td>
+                <td>${FREQ[c.frequencia] || c.frequencia+'m'}</td>
+                <td>${c.tipo}</td>
+                <td>R$ ${parseFloat(c.valor).toFixed(2)}</td>
+                <td>${proxStr} ${tag}</td>
+                <td><span class="status-badge status-${c.status}">${c.status}</span></td>
+                <td>
+                    <button class="btn btn-info btn-small" onclick="app.editarContrato(${c.id})">Editar</button>
+                    <button class="btn btn-danger btn-small" onclick="app.excluirContrato(${c.id})">Excluir</button>
+                </td>
+            </tr>`;
+        }).join('') || '<tr><td colspan="7" style="text-align:center;color:#999;">Nenhum contrato</td></tr>';
+    },
+
+    editarContrato(id) {
+        const c = this.dados.contratos.find(x => x.id === id);
+        if (!c) return;
+        document.getElementById('contratoCliente').value    = c.clienteId;
+        document.getElementById('contratoFrequencia').value = c.frequencia;
+        document.getElementById('contratoTipo').value       = c.tipo;
+        document.getElementById('contratoTecnico').value    = c.tecnico;
+        document.getElementById('contratoValor').value      = c.valor;
+        document.getElementById('contratoDia').value        = c.dia;
+        document.getElementById('contratoObs').value        = c.observacoes;
+        document.getElementById('contratoStatus').value     = c.status;
+        this.dados.contratos = this.dados.contratos.filter(x => x.id !== id);
+        this.salvarDados();
+        this.mostrarAlerta('Editando contrato. Faça as alterações e salve.', 'success');
+        window.scrollTo(0, 0);
+    },
+
+    excluirContrato(id) {
+        if (confirm('Deseja excluir este contrato?')) {
+            this.dados.contratos = this.dados.contratos.filter(c => c.id !== id);
+            this.salvarDados();
+            this.atualizarTabelaContratos();
+            this.atualizarDashboard();
+            this.mostrarAlerta('Contrato excluído!', 'success');
+        }
+    },
+
+    filtrarContratos() {
+        const busca = document.getElementById('searchContrato').value.toLowerCase();
+        document.querySelectorAll('#contratosTable tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(busca) ? '' : 'none';
+        });
+    },
+
+    calcularProximaData(contrato) {
+        const hoje = new Date();
+        const agendados = this.dados.agendamentos.filter(a => a.contratoId == contrato.id);
+        let base;
+        if (agendados.length > 0) {
+            const ultimo = agendados.map(a => new Date(a.data)).sort((a,b) => b-a)[0];
+            base = new Date(ultimo);
+            base.setMonth(base.getMonth() + contrato.frequencia);
+        } else {
+            base = new Date(hoje.getFullYear(), hoje.getMonth(), contrato.dia);
+            if (base < hoje) base.setMonth(base.getMonth() + 1);
+        }
+        base.setDate(contrato.dia);
+        return base;
+    },
+
+    contratosVencendoEsteMes() {
+        const hoje = new Date();
+        return this.dados.contratos.filter(c => {
+            if (c.status !== 'ativo') return false;
+            const prox = this.calcularProximaData(c);
+            const jaAgendado = this.dados.agendamentos.some(a =>
+                a.contratoId == c.id &&
+                new Date(a.data).getMonth() === hoje.getMonth() &&
+                new Date(a.data).getFullYear() === hoje.getFullYear()
+            );
+            return prox.getMonth() === hoje.getMonth() && prox.getFullYear() === hoje.getFullYear() && !jaAgendado;
+        });
+    },
+
+    // ─── MODAL ───────────────────────────────────────────────────────
+
+    abrirModalGeracao() {
+        const vencendo = this.contratosVencendoEsteMes();
+        const hoje = new Date();
+        const nomeMes = hoje.toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
+        document.getElementById('modalDescricao').textContent =
+            `Contratos ativos que vencem em ${nomeMes}. Ajuste as datas e técnicos se necessário, depois confirme.`;
+
+        const tabela = document.getElementById('modalTabela');
+        const vazio  = document.getElementById('modalVazio');
+        const tbody  = document.getElementById('modalTbody');
+
+        if (vencendo.length === 0) {
+            tabela.style.display = 'none';
+            vazio.style.display  = 'block';
+        } else {
+            tabela.style.display = 'table';
+            vazio.style.display  = 'none';
+            tbody.innerHTML = vencendo.map(c => {
+                const cliente = this.dados.clientes.find(cl => cl.id == c.clienteId);
+                const prox = this.calcularProximaData(c);
+                const dataISO = prox
+                    ? `${prox.getFullYear()}-${String(prox.getMonth()+1).padStart(2,'0')}-${String(prox.getDate()).padStart(2,'0')}T08:00`
+                    : '';
+                const tipos = ['Manutenção','Limpeza','Reparo','Instalação'].map(t =>
+                    `<option ${t===c.tipo?'selected':''}>${t}</option>`).join('');
+                return `<tr class="preview-row" data-id="${c.id}">
+                    <td><input type="checkbox" checked></td>
+                    <td><strong>${cliente?.nome || 'N/A'}</strong></td>
+                    <td><select>${tipos}</select></td>
+                    <td><input type="datetime-local" value="${dataISO}"></td>
+                    <td><input type="text" value="${c.tecnico||''}" placeholder="Técnico"></td>
+                    <td><input type="text" value="${c.observacoes||''}" placeholder="Observações"></td>
+                </tr>`;
+            }).join('');
+        }
+        document.getElementById('modalOverlay').classList.add('open');
+    },
+
+    fecharModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+    },
+
+    confirmarGeracaoAgendamentos() {
+        const rows = document.querySelectorAll('#modalTbody tr.preview-row');
+        let criados = 0;
+        rows.forEach(row => {
+            if (!row.querySelector('input[type="checkbox"]').checked) return;
+            const contratoId = parseInt(row.dataset.id);
+            const contrato = this.dados.contratos.find(c => c.id === contratoId);
+            if (!contrato) return;
+            const tipo    = row.querySelector('select').value;
+            const data    = row.querySelector('input[type="datetime-local"]').value;
+            const inputs  = row.querySelectorAll('input[type="text"]');
+            const tecnico = inputs[0].value;
+            const obs     = inputs[1].value;
+            if (!data) return;
+            this.dados.agendamentos.push({
+                id: Date.now() + Math.random(),
+                clienteId: contrato.clienteId,
+                tipo, data, tecnico,
+                observacoes: obs,
+                status: 'Agendado',
+                contratoId
+            });
+            criados++;
+        });
+        if (criados > 0) {
+            this.salvarDados();
+            this.atualizarDashboard();
+            this.fecharModal();
+            this.mostrarAlerta(`✅ ${criados} agendamento(s) criado(s) com sucesso!`, 'success');
+        } else {
+            this.mostrarAlerta('Nenhum agendamento selecionado.', 'error');
+        }
+    },
+
+    // ─── IMPORTAR/EXPORTAR CONTRATOS ─────────────────────────────────
+
+    importarContratosExcel(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const wb   = XLSX.read(new Uint8Array(e.target.result), { type:'array' });
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                const FREQ = { mensal:1, bimestral:2, trimestral:3, semestral:6, anual:12 };
+                let ok = 0, erros = 0;
+                rows.forEach(row => {
+                    const nome = (row['Cliente']||'').toString().trim();
+                    const cliente = this.dados.clientes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
+                    if (!nome || !cliente) { erros++; return; }
+                    const freqStr = (row['Frequencia']||row['Frequência']||'mensal').toString().toLowerCase().trim();
+                    this.dados.contratos.push({
+                        id: Date.now() + Math.random(),
+                        clienteId:   cliente.id,
+                        frequencia:  FREQ[freqStr] || parseInt(freqStr) || 1,
+                        tipo:        row['Tipo'] || 'Manutenção',
+                        tecnico:     row['Tecnico'] || row['Técnico'] || '',
+                        valor:       row['Valor'] || '0',
+                        dia:         parseInt(row['Dia']) || 10,
+                        observacoes: row['Observacoes'] || row['Observações'] || '',
+                        status:      (row['Status']||'ativo').toLowerCase(),
+                        dataCriacao: new Date().toISOString()
+                    });
+                    ok++;
+                });
+                this.salvarDados();
+                this.atualizarTabelaContratos();
+                this.atualizarDashboard();
+                this.mostrarAlerta(`✅ ${ok} contrato(s) importado(s)!${erros?` (${erros} cliente(s) não encontrado(s))`:''}`, 'success');
+            } catch(err) {
+                this.mostrarAlerta('❌ Erro ao importar. Use o modelo fornecido!', 'error');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+        event.target.value = '';
+    },
+
+    exportarContratosExcel() {
+        if (!this.dados.contratos.length) { this.mostrarAlerta('Nenhum contrato para exportar!', 'error'); return; }
+        const FREQ = { 1:'Mensal', 2:'Bimestral', 3:'Trimestral', 6:'Semestral', 12:'Anual' };
+        const ws = XLSX.utils.json_to_sheet(this.dados.contratos.map(c => {
+            const cliente = this.dados.clientes.find(cl => cl.id == c.clienteId);
+            return { 'Cliente':cliente?.nome||'', 'Frequência':FREQ[c.frequencia]||c.frequencia,
+                     'Tipo':c.tipo, 'Técnico':c.tecnico, 'Valor':c.valor,
+                     'Dia':c.dia, 'Observações':c.observacoes, 'Status':c.status };
+        }));
+        ws['!cols'] = [{wch:30},{wch:15},{wch:15},{wch:20},{wch:12},{wch:6},{wch:30},{wch:10}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Contratos');
+        XLSX.writeFile(wb, `Contratos_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.xlsx`);
+        this.mostrarAlerta('✅ Contratos exportados!', 'success');
+    },
+
+    baixarModeloContratos() {
+        const modelo = [
+            { 'Cliente':'Nome Exato do Cliente', 'Frequencia':'Mensal', 'Tipo':'Manutenção', 'Tecnico':'João Silva', 'Valor':'250.00', 'Dia':'10', 'Observacoes':'2 aparelhos split', 'Status':'ativo' },
+            { 'Cliente':'Outro Cliente',          'Frequencia':'Trimestral', 'Tipo':'Limpeza', 'Tecnico':'Maria',     'Valor':'180.00', 'Dia':'15', 'Observacoes':'',              'Status':'ativo' }
+        ];
+        const ws = XLSX.utils.json_to_sheet(modelo);
+        ws['!cols'] = [{wch:25},{wch:14},{wch:14},{wch:16},{wch:10},{wch:6},{wch:25},{wch:10}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Modelo Contratos');
+        XLSX.writeFile(wb, 'Modelo_Contratos.xlsx');
+        this.mostrarAlerta('✅ Modelo baixado! O nome do cliente deve ser idêntico ao cadastrado.', 'success');
+    },
+
+    // ─── CLIENTES ────────────────────────────────────────────────────
+
+    salvarCliente() {
+        const cliente = {
+            id: Date.now(),
+            nome:     document.getElementById('clienteNome').value.trim(),
+            telefone: document.getElementById('clienteTelefone').value.trim(),
+            email:    document.getElementById('clienteEmail').value.trim(),
+            endereco: document.getElementById('clienteEndereco').value.trim()
+        };
+        if (!cliente.nome || !cliente.telefone) { this.mostrarAlerta('Preencha nome e telefone!', 'error'); return; }
+        this.dados.clientes.push(cliente);
+        this.salvarDados();
+        this.atualizarTabelaClientes();
+        this.limparForm(['clienteNome','clienteTelefone','clienteEmail','clienteEndereco']);
+        this.mostrarAlerta('Cliente salvo com sucesso!', 'success');
+        this.atualizarDashboard();
+    },
+
+    atualizarTabelaClientes() {
+        document.getElementById('clientesTable').innerHTML = this.dados.clientes.map(c =>
+            `<tr><td>${c.nome}</td><td>${c.telefone}</td>
+             <td><button class="btn btn-danger btn-small" onclick="app.excluir('clientes',${c.id})">Excluir</button></td></tr>`
+        ).join('') || '<tr><td colspan="3" style="text-align:center;color:#999;">Nenhum cliente</td></tr>';
+        this.atualizarSelectsClientes();
+    },
+
+    atualizarSelectsClientes() {
+        const opts = '<option value="">Selecione um cliente</option>' +
+            this.dados.clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+        ['orcamentoCliente','agendamentoCliente','contratoCliente'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerHTML = opts;
+        });
+    },
+
+    filtrarClientes() {
+        const busca = document.getElementById('searchCliente').value.toLowerCase();
+        document.querySelectorAll('#clientesTable tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(busca) ? '' : 'none';
+        });
+    },
+
+    // ─── ORÇAMENTOS ──────────────────────────────────────────────────
+
+    salvarOrcamento() {
+        const o = {
+            id: Date.now(),
+            clienteId:  document.getElementById('orcamentoCliente').value,
+            tipo:       document.getElementById('orcamentoTipo').value,
+            descricao:  document.getElementById('orcamentoDescricao').value.trim(),
+            valor:      document.getElementById('orcamentoValor').value,
+            status: 'Pendente',
+            data: new Date().toLocaleDateString('pt-BR')
+        };
+        if (!o.clienteId || !o.valor) { this.mostrarAlerta('Selecione um cliente e informe o valor!', 'error'); return; }
+        this.dados.orcamentos.push(o);
+        this.salvarDados();
+        this.atualizarTabelaOrcamentos();
+        this.limparForm(['orcamentoDescricao','orcamentoValor']);
+        this.mostrarAlerta('Orçamento salvo!', 'success');
+        this.atualizarDashboard();
+    },
+
+    atualizarTabelaOrcamentos() {
+        document.getElementById('orcamentosTable').innerHTML = this.dados.orcamentos.map(o => {
+            const c = this.dados.clientes.find(c => c.id == o.clienteId);
+            return `<tr><td>${c?.nome||'N/A'}</td><td>${o.tipo}</td>
+                    <td>R$ ${parseFloat(o.valor).toFixed(2)}</td>
+                    <td><span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span></td>
+                    <td><button class="btn btn-danger btn-small" onclick="app.excluir('orcamentos',${o.id})">Excluir</button></td></tr>`;
+        }).join('') || '<tr><td colspan="5" style="text-align:center;color:#999;">Nenhum orçamento</td></tr>';
+    },
+
+    // ─── AGENDAMENTOS ────────────────────────────────────────────────
+
+    salvarAgendamento() {
+        const a = {
+            id: Date.now(),
+            clienteId:   document.getElementById('agendamentoCliente').value,
+            tipo:        document.getElementById('agendamentoTipo').value,
+            data:        document.getElementById('agendamentoData').value,
+            tecnico:     document.getElementById('agendamentoTecnico').value.trim(),
+            observacoes: document.getElementById('agendamentoObs').value.trim(),
+            status:      document.getElementById('agendamentoStatus').value
+        };
+        if (!a.clienteId || !a.data) { this.mostrarAlerta('Selecione um cliente e informe a data!', 'error'); return; }
+        this.dados.agendamentos.push(a);
+        this.salvarDados();
+        this.atualizarTabelaAgendamentos();
+        this.limparForm(['agendamentoData','agendamentoTecnico','agendamentoObs']);
+        document.getElementById('agendamentoStatus').value = 'Agendado';
+        this.mostrarAlerta('Agendamento salvo!', 'success');
+        this.atualizarDashboard();
+    },
+
+    atualizarTabelaAgendamentos() {
+        document.getElementById('agendamentosTable').innerHTML = this.dados.agendamentos.map(a => {
+            const c = this.dados.clientes.find(c => c.id == a.clienteId);
+            return `<tr><td>${c?.nome||'N/A'}</td>
+                    <td>${new Date(a.data).toLocaleString('pt-BR')}</td>
+                    <td>${a.tipo}</td>
+                    <td><span class="status-badge status-${a.status.toLowerCase().replace(' ','-')}">${a.status}</span></td>
+                    <td>
+                        <button class="btn btn-info btn-small" onclick="app.editarAgendamento(${a.id})">Editar</button>
+                        <button class="btn btn-danger btn-small" onclick="app.excluir('agendamentos',${a.id})">Excluir</button>
+                    </td></tr>`;
+        }).join('') || '<tr><td colspan="5" style="text-align:center;color:#999;">Nenhum agendamento</td></tr>';
+    },
+
+    editarAgendamento(id) {
+        const a = this.dados.agendamentos.find(x => x.id === id);
+        if (!a) return;
+        document.getElementById('agendamentoCliente').value  = a.clienteId;
+        document.getElementById('agendamentoTipo').value     = a.tipo;
+        document.getElementById('agendamentoData').value     = a.data;
+        document.getElementById('agendamentoTecnico').value  = a.tecnico;
+        document.getElementById('agendamentoObs').value      = a.observacoes;
+        document.getElementById('agendamentoStatus').value   = a.status;
+        this.dados.agendamentos = this.dados.agendamentos.filter(x => x.id !== id);
+        this.salvarDados();
+        this.mostrarAlerta('Editando agendamento. Faça as alterações e salve.', 'success');
+        window.scrollTo(0, 0);
+    },
+
+    // ─── MANUTENÇÕES ─────────────────────────────────────────────────
+
+    atualizarTabelaManutencoes() {
+        const todas     = this.dados.agendamentos.filter(a => a.tipo === 'Manutenção');
+        const pendentes = todas.filter(a => ['Agendado','Em Andamento'].includes(a.status));
+        const concluidas = todas.filter(a => a.status === 'Concluído');
+
+        document.getElementById('manutencoesPendentesTable').innerHTML = pendentes.length === 0
+            ? '<tr><td colspan="5" style="text-align:center;color:#999;">Nenhuma manutenção pendente</td></tr>'
+            : pendentes.map(m => {
+                const c = this.dados.clientes.find(c => c.id == m.clienteId);
+                return `<tr><td>${new Date(m.data).toLocaleString('pt-BR')}</td>
+                        <td>${c?.nome||'N/A'}</td><td>${m.tecnico||'N/A'}</td>
+                        <td>${m.observacoes||'—'}</td>
+                        <td><span class="status-badge status-${m.status.toLowerCase().replace(' ','-')}">${m.status}</span></td></tr>`;
+            }).join('');
+
+        document.getElementById('manutencoesTable').innerHTML = concluidas.length === 0
+            ? '<tr><td colspan="4" style="text-align:center;color:#999;">Nenhuma manutenção concluída</td></tr>'
+            : concluidas.map(m => {
+                const c = this.dados.clientes.find(c => c.id == m.clienteId);
+                return `<tr><td>${new Date(m.data).toLocaleString('pt-BR')}</td>
+                        <td>${c?.nome||'N/A'}</td>
+                        <td>${m.observacoes||'Manutenção preventiva'}</td>
+                        <td>${m.tecnico||'N/A'}</td></tr>`;
+            }).join('');
+    },
+
+    // ─── USUÁRIOS ────────────────────────────────────────────────────
+
+    salvarUsuario() {
+        const senhaRaw = document.getElementById('usuarioSenha').value;
+        const u = {
+            nome:  document.getElementById('usuarioNome').value.trim(),
+            login: document.getElementById('usuarioLogin').value.trim(),
+            senha: btoa(senhaRaw),
+            tipo:  document.getElementById('usuarioTipo').value
+        };
+        if (!u.nome || !u.login || !senhaRaw) { this.mostrarAlerta('Preencha todos os campos!', 'error'); return; }
+        if (this.dados.usuarios.find(x => x.login === u.login)) { this.mostrarAlerta('Usuário já existe!', 'error'); return; }
+        this.dados.usuarios.push(u);
+        this.salvarDados();
+        this.atualizarTabelaUsuarios();
+        this.limparForm(['usuarioNome','usuarioLogin','usuarioSenha']);
+        this.mostrarAlerta('Usuário salvo!', 'success');
+    },
+
+    atualizarTabelaUsuarios() {
+        document.getElementById('usuariosTable').innerHTML = this.dados.usuarios.map(u => {
+            const isAdmin = u.login === 'admin';
+            const isSelf  = u.login === this.usuarioLogado?.login;
+            return `<tr><td>${u.nome}</td><td>${u.login}</td><td>${u.tipo}</td>
+                    <td>${isAdmin ? '<span style="color:#999;font-size:12px;">Protegido</span>'
+                    : `<button class="btn btn-danger btn-small" onclick="app.excluirUsuario('${u.login}')" ${isSelf?'disabled':''}>Excluir</button>`
+                    }</td></tr>`;
+        }).join('');
+    },
+
+    excluirUsuario(login) {
+        if (login==='admin') { this.mostrarAlerta('O admin não pode ser excluído!', 'error'); return; }
+        if (login===this.usuarioLogado.login) { this.mostrarAlerta('Não pode excluir seu próprio usuário!', 'error'); return; }
+        if (confirm('Deseja excluir este usuário?')) {
+            this.dados.usuarios = this.dados.usuarios.filter(u => u.login !== login);
+            this.salvarDados();
+            this.atualizarTabelaUsuarios();
+            this.mostrarAlerta('Usuário excluído!', 'success');
+        }
+    },
+
+    // ─── AUXILIARES ──────────────────────────────────────────────────
+
+    excluir(tipo, id) {
+        const label = { clientes:'cliente', orcamentos:'orçamento', agendamentos:'agendamento' };
+        if (confirm(`Deseja realmente excluir este ${label[tipo]||'item'}?`)) {
+            this.dados[tipo] = this.dados[tipo].filter(x => x.id !== id);
+            this.salvarDados();
+            ({ clientes: () => this.atualizarTabelaClientes(),
+               orcamentos: () => this.atualizarTabelaOrcamentos(),
+               agendamentos: () => this.atualizarTabelaAgendamentos()
+            })[tipo]?.();
+            this.mostrarAlerta('Excluído com sucesso!', 'success');
+            this.atualizarDashboard();
+        }
+    },
+
+    limparForm(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el) el.value=''; }); },
+
+    // ─── EXCEL CLIENTES ──────────────────────────────────────────────
+
+    importarExcel(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const wb   = XLSX.read(new Uint8Array(e.target.result), { type:'array' });
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                let ok = 0, erros = 0;
+                rows.forEach(row => {
+                    if (row.Nome && row.Telefone) {
+                        this.dados.clientes.push({ id: Date.now()+Math.random(),
+                            nome: row.Nome||'', telefone: row.Telefone||'',
+                            email: row.Email||'', endereco: row.Endereco||row['Endereço']||'' });
+                        ok++;
+                    } else erros++;
+                });
+                this.salvarDados();
+                this.atualizarTabelaClientes();
+                this.atualizarDashboard();
+                this.mostrarAlerta(`✅ ${ok} clientes importados!${erros?` (${erros} erros)`:''}`, 'success');
+            } catch(err) { this.mostrarAlerta('❌ Erro ao importar!', 'error'); }
+        };
+        reader.readAsArrayBuffer(file);
+        event.target.value = '';
+    },
+
+    exportarExcel() {
+        if (!this.dados.clientes.length) { this.mostrarAlerta('Nenhum cliente para exportar!', 'error'); return; }
+        const ws = XLSX.utils.json_to_sheet(this.dados.clientes.map(c =>
+            ({ 'Nome':c.nome, 'Telefone':c.telefone, 'Email':c.email, 'Endereço':c.endereco })));
+        ws['!cols'] = [{wch:30},{wch:15},{wch:30},{wch:40}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
+        XLSX.writeFile(wb, `Clientes_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.xlsx`);
+        this.mostrarAlerta('✅ Exportado!', 'success');
+    },
+
+    baixarModeloExcel() {
+        const modelo = [
+            { 'Nome':'Exemplo Cliente 1','Telefone':'(11) 98765-4321','Email':'c1@email.com','Endereço':'Rua Exemplo, 123 - SP' },
+            { 'Nome':'Exemplo Cliente 2','Telefone':'(21) 91234-5678','Email':'c2@email.com','Endereço':'Av. Exemplo, 456 - RJ' }
+        ];
+        const ws = XLSX.utils.json_to_sheet(modelo);
+        ws['!cols'] = [{wch:30},{wch:15},{wch:30},{wch:40}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Modelo');
+        XLSX.writeFile(wb, 'Modelo_Clientes.xlsx');
+        this.mostrarAlerta('✅ Modelo baixado!', 'success');
+    }
+};
+
+app.init();
+</script>
+</body>
+</html>
