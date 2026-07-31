@@ -270,8 +270,8 @@
                         <input type="file" id="importExcel" accept=".xlsx,.xls" onchange="app.importarExcel(event)">
                         <label for="importExcel" class="file-input-label">📥 Importar do Excel</label>
                     </div>
-                    <button class="btn btn-secondary" onclick="app.exportarExcel()">📤 Exportar para Excel</button>
-                    <button class="btn btn-success" onclick="app.baixarModeloExcel()">📋 Baixar Modelo</button>
+                    <button class="btn btn-secondary" onclick="app.exportarExcel()"> Exportar para Excel</button>
+                    <button class="btn btn-success" onclick="app.baixarModeloExcel()"> Baixar Modelo</button>
                 </div>
                 <div class="grid-2" style="margin-top:20px;">
                     <div class="card">
@@ -307,9 +307,9 @@
                         <input type="file" id="importContratosExcel" accept=".xlsx,.xls" onchange="app.importarContratosExcel(event)">
                         <label for="importContratosExcel" class="file-input-label">📥 Importar Contratos</label>
                     </div>
-                    <button class="btn btn-secondary" onclick="app.exportarContratosExcel()">📤 Exportar Contratos</button>
-                    <button class="btn btn-success" onclick="app.baixarModeloContratos()">📋 Baixar Modelo Excel</button>
-                    <button class="btn btn-warning" onclick="app.abrirModalGeracao()">⚡ Gerar Agendamentos do Mês</button>
+                    <button class="btn btn-secondary" onclick="app.exportarContratosExcel()"> Exportar Contratos</button>
+                    <button class="btn btn-success" onclick="app.baixarModeloContratos()"> Baixar Modelo Excel</button>
+                    <button class="btn btn-warning" onclick="app.abrirModalGeracao()"> Gerar Agendamentos do Mês</button>
                 </div>
 
                 <div class="grid-2" style="margin-top:20px;">
@@ -575,7 +575,7 @@ const app = {
         const abas = [
             { id:'dashboard',    nome:'Dashboard',               permissoes:['admin','tecnico','vendedor'] },
             { id:'clientes',     nome:'Clientes',                permissoes:['admin','vendedor'] },
-            { id:'contratos',    nome:'📋 Contratos Recorrentes', permissoes:['admin','vendedor'] },
+            { id:'contratos',    nome:' Contratos Recorrentes', permissoes:['admin','vendedor'] },
             { id:'orcamentos',   nome:'Orçamentos',              permissoes:['admin','vendedor'] },
             { id:'agendamentos', nome:'Agendamentos',            permissoes:['admin','tecnico','vendedor'] },
             { id:'manutencoes',  nome:'Manutenções',             permissoes:['admin','tecnico'] },
